@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 20px;
+        }
+
+        .header-buttons a {
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Buttons -->
+    <div class="header-buttons">
+        <a href="/products/">Products</a>
+        <a href="/orders/">Orders</a>
+    </div>
+
+    <!-- Order Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Sl. No.</th>
+                <th>Order ID</th>
+                <th>Item Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total Price</th>
+                <th>Instruction</th>
+                <th>Order Date</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.product.price }}</td>
+                <td>{{ order.total_price }}</td>
+                <td>{{ order.special_instruction }}</td>
+                <td>{{ order.order_date }}</td>
+                <td><a href="{% url 'order_detail' order.order_id %}">View</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+        }
+
+        th, td { 
+            padding: 8px; 
+            text-align: center; 
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .order-button {
+            background-color: #007BFF; 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .order-button:hover {
+            background-color: #0056b3;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .header-buttons a {
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 20px;
+        }
+    </style>
+    <script>
+        function updateTotalPrice(productId) {
+            const quantity = parseInt(document.getElementById(`quantity_${productId}`).value);
+            const unitPrice = parseFloat(document.getElementById(`unit_price_${productId}`).innerText);
+            const totalPrice = quantity * unitPrice;
+
+            document.getElementById(`total_price_${productId}`).innerText = totalPrice.toFixed(2);
+            document.getElementById(`hidden_quantity_${productId}`).value = quantity;
+        }
+
+        function increaseQuantity(productId) {
+            const quantityInput = document.getElementById(`quantity_${productId}`);
+            let quantity = parseInt(quantityInput.value);
+            quantityInput.value = quantity + 1;
+            updateTotalPrice(productId);
+        }
+
+        function decreaseQuantity(productId) {
+            const quantityInput = document.getElementById(`quantity_${productId}`);
+            let quantity = parseInt(quantityInput.value);
+            if (quantity > 1) {
+                quantityInput.value = quantity - 1;
+                updateTotalPrice(productId);
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Navigation Buttons -->
+    <div class="header-buttons">
+        <a href="/products/" class="btn">Products</a>
+        <a href="/orders/" class="btn">Order</a>
+    </div>
+
+    <p>Logged in as: {{ user.username }}</p>
+
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="order_date">Order date: </label>
+        <input type="date" id="order_date" name="order_date">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Select Item</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                    <th>Special Instructions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td><input type="checkbox" name="selected_products" value="{{ product.id }}"></td>
+                    <td>{{ product.name }}</td>
+                    <td>
+                        <button type="button" onclick="decreaseQuantity('{{ product.id }}')">-</button>
+                        <input type="number" id="quantity_{{ product.id }}" value="1" min="1" onchange="updateTotalPrice('{{ product.id }}')">
+                        <button type="button" onclick="increaseQuantity('{{ product.id }}')">+</button>
+                    </td>
+                    <td id="unit_price_{{ product.id }}">{{ product.price }}</td>
+                    <td><span id="total_price_{{ product.id }}">{{ product.price }}</span></td>
+                    <td><input type="text" id="instruction_{{ product.id }}" name="instruction_{{ product.id }}" placeholder="Add instruction"></td>
+                    <input type="hidden" name="hidden_quantity_{{ product.id }}" id="hidden_quantity_{{ product.id }}" value="1">
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="button-container">
+            <button type="submit" class="order-button">Order Now</button>
+        </div>
+    </form>
+</body>
+</html>
